@@ -11,6 +11,9 @@ import java.util.Set;
 @Table(name="users")
 public class User implements UserDetails {
 
+    public User() {
+    }
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +37,7 @@ public class User implements UserDetails {
     @JoinColumn(name="barcode_id")
     private Barcode barcode;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinTable(name="user_roles",joinColumns=@JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
     private Set<Role> roles;

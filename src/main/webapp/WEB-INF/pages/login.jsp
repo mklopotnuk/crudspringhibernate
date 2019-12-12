@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: merlin
@@ -12,12 +13,16 @@
 </head>
 <body>
 
-<form action="/login" method="post">
+<c:if test="${param.logout != null}">
+    <div class="logout">${message}</div>
+</c:if>
+
+<form action="<c:url value='/login' />" method="post">
     <label>Name
-        <input type="text" name="name"></label>
+        <input type="text" name="name"></label><br>
     <label>Password
         <input type="password" name="password">
-    </label>
+    </label><br>
     <input type="submit" value="Login">
 </form>
 

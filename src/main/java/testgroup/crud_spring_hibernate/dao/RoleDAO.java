@@ -4,7 +4,7 @@ import testgroup.crud_spring_hibernate.model.Role;
 
 import java.util.List;
 
-public interface RolesDAO {
+public interface RoleDAO {
 
     Role getById(Long id);
     void add(Role role);

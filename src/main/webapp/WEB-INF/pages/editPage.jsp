@@ -29,16 +29,24 @@
 <form action="${var}" method="post">
     <c:if test="${!empty user.name}">
         <input type="hidden" name="id" value="${user.id}">
+        <input type="hidden" name="barcodeId" value="${barcodeId}">
     </c:if>
     <label>Name
         <input type="text" name="name" value="${user.name}"></label>
     <label>Password
         <input type="password" name="password">
     </label>
-    <label>Re-type password
-        <input type="password" name="confirmPassword">
-    </label>
+<%--    <label>Re-type password--%>
+<%--        <input type="password" name="confirmPassword">--%>
+<%--    </label>--%>
+<%--    </label>--%>
     <c:if test="${!empty user.name}">
+
+        <label>Role <select name="role">
+            <option value="1">USER</option>
+            <option value="2">ADMIN</option>
+        </select>
+        </label>
         <input type="submit" value="Edit user">
     </c:if>
 

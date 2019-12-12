@@ -2,7 +2,7 @@ package testgroup.crud_spring_hibernate.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import testgroup.crud_spring_hibernate.dao.RolesDAO;
+import testgroup.crud_spring_hibernate.dao.RoleDAO;
 import testgroup.crud_spring_hibernate.model.Role;
 
 import javax.persistence.EntityManager;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @Transactional
-public class RolesDAOImpl implements RolesDAO {
+public class RoleDAOImpl implements RoleDAO {
 
     @PersistenceContext
     private EntityManager entityManager;

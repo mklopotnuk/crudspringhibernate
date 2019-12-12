@@ -41,6 +41,14 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void edit(User user) {
+//        entityManager.createQuery("UPDATE User c set " +
+//                "c.name=:n , " +
+//                "c.password=:userPassword" +
+//                "  WHERE c.name = :n")
+//                .setParameter("n", user.getName())
+//                .setParameter("userPassword", user.getPassword())
+////                .setParameter("userRole", user.getRoles())
+//                .executeUpdate();
         entityManager.merge(user);
     }
 

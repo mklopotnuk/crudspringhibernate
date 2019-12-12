@@ -3,17 +3,14 @@ package testgroup.crud_spring_hibernate.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-import testgroup.crud_spring_hibernate.dao.BarcodeDAO;
-import testgroup.crud_spring_hibernate.dao.RolesDAO;
 import testgroup.crud_spring_hibernate.dao.UserDAO;
 import testgroup.crud_spring_hibernate.model.Barcode;
 import testgroup.crud_spring_hibernate.model.Role;
 import testgroup.crud_spring_hibernate.model.User;
 import testgroup.crud_spring_hibernate.service.UserService;
 
-import javax.validation.ConstraintViolationException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +18,7 @@ import java.util.Set;
 
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private UserDAO userDAO;
@@ -29,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
     public UserServiceImpl(UserDAO userDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -51,9 +50,9 @@ public class UserServiceImpl implements UserService {
         Barcode barcode = new Barcode();
         RestTemplate restTemplate = new RestTemplate();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        Set<Role> roles = new HashSet<>();
+//        Set<Role> roles = new HashSet<>();
 //        roles.add(rolesDAO.getById(1L));
-        user.setRoles(roles);
+//        user.setRoles(roles);
         Long userId = userDAO.add(user);
         String formattedId = String.format("S%06d", userId);
         String url = "http://barcodes4.me/barcode/c128b/" + formattedId + ".png?resolution=2";
@@ -64,7 +63,7 @@ public class UserServiceImpl implements UserService {
         String string = Base64.getEncoder().encodeToString(imageBytes);
         barcode.setBarcodeImage(string);
         user.setBarcode(barcode);
-        userDAO.edit(user);
+//        userDAO.edit(user);
         return userId;
     }
 
@@ -76,17 +75,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void edit(User user) {
 //        При редактировании юзера в null сбрасывается barcode_id
-//        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userDAO.edit(user);
-    }
+            userDAO.edit(user);
+        }
 
-    @Override
-    public User getById(Long id) {
-        return userDAO.getById(id);
-    }
+        @Override
+        public User getById (Long id){
+            return userDAO.getById(id);
+        }
 
-    @Override
-    public User findByUserName(String name) {
-        return userDAO.findByUserName(name);
+        @Override
+        public User findByUserName (String name){
+            return userDAO.findByUserName(name);
+        }
     }
-}

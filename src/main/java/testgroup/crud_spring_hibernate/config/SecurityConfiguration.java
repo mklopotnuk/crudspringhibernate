@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -33,14 +32,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http.csrf().disable().authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests()
-                .antMatchers("/**").permitAll();
-//                .antMatchers("/").permitAll()
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/add").permitAll()
-//                .antMatchers("/admin/**").hasAuthority("ADMIN")
-//                .and()
-//                .formLogin().loginPage("/login").loginProcessingUrl("/login").permitAll();
+                .antMatchers("/login").permitAll()
+                .antMatchers("/add").permitAll()
+                .antMatchers("/user/**").hasAnyAuthority("USER,ADMIN")
+                .antMatchers("/admin/**").hasAuthority("ADMIN")
+                .antMatchers("/**").permitAll()
+                .and()
+                .formLogin().loginPage("/login").loginProcessingUrl("/login").permitAll()
+                .usernameParameter("name")
+                .passwordParameter("password")
+                .successHandler(mySuccessHandler)
+                .and()
+                .logout()
+                .and().csrf().disable();
 
     }
 
@@ -48,7 +54,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 
 }
