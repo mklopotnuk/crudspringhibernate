@@ -19,12 +19,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Id
-//    @Column(name= "phone")
-//    private String phone;
-//
     @Column(unique = true)
-//    @UniqueConstraint()
     private String name;
 
     @Column

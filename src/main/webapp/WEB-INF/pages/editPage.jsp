@@ -36,10 +36,7 @@
     <label>Password
         <input type="password" name="password">
     </label>
-<%--    <label>Re-type password--%>
-<%--        <input type="password" name="confirmPassword">--%>
-<%--    </label>--%>
-<%--    </label>--%>
+
     <c:if test="${!empty user.name}">
 
         <label>Role <select name="role">

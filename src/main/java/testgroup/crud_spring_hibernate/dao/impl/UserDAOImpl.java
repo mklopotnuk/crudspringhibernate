@@ -7,15 +7,11 @@ import testgroup.crud_spring_hibernate.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.validation.ConstraintDeclarationException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 @Repository
 @Transactional
 public class UserDAOImpl implements UserDAO {
-
-//    private EntityManagerFactory entityManagerFactory;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -41,14 +37,6 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void edit(User user) {
-//        entityManager.createQuery("UPDATE User c set " +
-//                "c.name=:n , " +
-//                "c.password=:userPassword" +
-//                "  WHERE c.name = :n")
-//                .setParameter("n", user.getName())
-//                .setParameter("userPassword", user.getPassword())
-////                .setParameter("userRole", user.getRoles())
-//                .executeUpdate();
         entityManager.merge(user);
     }
 
@@ -59,11 +47,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findByUserName(String username) {
-
-        //        return entityManager.find(User.class, username);
         return (User) entityManager.createQuery("SELECT c FROM User c WHERE c.name = :custName")
                       .setParameter("custName", username)
-//                      .setMaxResults(1)
                       .getSingleResult();
     }
 }

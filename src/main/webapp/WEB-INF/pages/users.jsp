@@ -54,10 +54,6 @@
             Password <form:input path="password"></form:input>
         </td>
 
-            <%--        <td>--%>
-            <%--            <form:checkboxes items="${roles}" path="roles" itemValue="id" title="name"/>--%>
-            <%--        </td>--%>
-
         <td>Role <select name="role">
             <option value="1">USER</option>
             <option value="2">ADMIN</option>
