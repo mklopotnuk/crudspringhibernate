@@ -3,12 +3,12 @@ package testgroup.crud_spring_hibernate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 import testgroup.crud_spring_hibernate.model.Barcode;
 import testgroup.crud_spring_hibernate.model.Role;
 import testgroup.crud_spring_hibernate.model.User;
@@ -29,8 +29,6 @@ public class UserController {
     private RoleService roleService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private String defaultRedirect = "redirect:/";
-
     @Autowired
     public UserController(UserService userService, BarcodeService barcodeService, RoleService roleService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
@@ -40,33 +38,27 @@ public class UserController {
     }
 
     @GetMapping
-    public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("index");
-        return modelAndView;
+    public String index() {
+        return "index";
     }
 
     @GetMapping(value = "/admin/userslist")
-    public ModelAndView allUsers() {
+    public String allUsers(Model model) {
         List<User> users = userService.allUsers();
         List<Role> roles = roleService.getRoles();
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("users");
-        modelAndView.addObject("user", new User());
-        modelAndView.addObject("usersList", users);
-        modelAndView.addObject("roles", roles);
-        return modelAndView;
+        model.addAttribute("user", new User());
+        model.addAttribute("usersList", users);
+        model.addAttribute("roles", roles);
+        return "users";
     }
 
     @GetMapping(value = "/admin/edit/{id}")
-    public ModelAndView editPage(@PathVariable("id") Long id) {
+    public String editPage(@PathVariable("id") Long id, Model model) {
         User user = userService.getById(id);
         Long barcodeId = user.getBarcode().getId();
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("editPage");
-        modelAndView.addObject("user", user);
-        modelAndView.addObject("barcodeId", barcodeId);
-        return modelAndView;
+        model.addAttribute("user", user);
+        model.addAttribute("barcodeId", barcodeId);
+        return "editPage";
     }
 
     @PostMapping(value = "/edit")
@@ -74,7 +66,7 @@ public class UserController {
         User currentUser = userService.getById(user.getId());
         user.setBarcode(currentUser.getBarcode());
 
-        if (user.getPassword() == null) {
+        if (user.getPassword().equals("")) {
             user.setPassword(currentUser.getPassword());
         } else {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -86,34 +78,30 @@ public class UserController {
     }
 
     @GetMapping(value = "/add")
-    public ModelAndView addPage() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("editPage");
-        return modelAndView;
+    public String addPage() {
+        return "editPage";
     }
 
     @GetMapping(value = "/login")
-    public ModelAndView loginPage(String logout) {
-        ModelAndView modelAndView = new ModelAndView();
+    public String loginPage(String logout, Model model) {
         if (logout != null) {
-            modelAndView.addObject("message", "Logout successfully");
+            model.addAttribute("message", "Logout successfully");
         }
-        modelAndView.setViewName("login");
-        return modelAndView;
+        return "login";
     }
 
 
     @PostMapping(value = "add")
     public String add(@ModelAttribute("user") User user, BindingResult bindingResult, HttpServletRequest request) {
         String role = request.getParameter("role");
-        Set<Role> roles = null;
+        Set<Role> roles;
         if (role == null) {
             roles = Collections.singleton(roleService.getRoleById(1L));
         } else {
             roles = Collections.singleton(roleService.getRoleById(Long.valueOf(role)));
         }
         user.setRoles(roles);
-        Long userId;
+        userService.add(user);
         return "redirect:/admin/userslist";
     }
 
@@ -125,18 +113,17 @@ public class UserController {
     }
 
     @GetMapping(value = "/user/view/{id}")
-    public ModelAndView showUser(@PathVariable("id") Long id, ModelAndView modelAndView) {
-        modelAndView.setViewName("showUser");
-//        Тут есть косяк, если ввести не существующий id пользователя, покажется страничка с пустыми строками
+    public String showUser(@PathVariable("id") Long id, Model model) {
+        //        Тут есть косяк, если ввести не существующий id пользователя, покажется страничка с пустыми строками
         User user = userService.getById(id);
-        modelAndView.addObject("user", user);
+        model.addAttribute("user", user);
         try {
             Barcode barcode = barcodeService.getById(user.getBarcode().getId());
-            modelAndView.addObject("barcode", barcode);
+            model.addAttribute("barcode", barcode);
         } catch (NullPointerException e) {
-            modelAndView.setViewName(defaultRedirect);
+            return "redirect:/";
         }
-        return modelAndView;
+        return "showUser";
     }
 
 }
