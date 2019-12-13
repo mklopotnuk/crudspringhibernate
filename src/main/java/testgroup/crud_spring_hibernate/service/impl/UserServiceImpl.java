@@ -5,6 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import testgroup.crud_spring_hibernate.config.AppProperties;
 import testgroup.crud_spring_hibernate.dao.UserDAO;
 import testgroup.crud_spring_hibernate.model.Barcode;
 import testgroup.crud_spring_hibernate.model.User;
@@ -21,11 +22,13 @@ public class UserServiceImpl implements UserService {
 
     private UserDAO userDAO;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private AppProperties appProperties;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserDAO userDAO, BCryptPasswordEncoder bCryptPasswordEncoder, AppProperties appProperties) {
         this.userDAO = userDAO;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.appProperties = appProperties;
     }
 
     @Override
@@ -40,7 +43,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         Long userId = userDAO.add(user);
         String formattedId = String.format("S%06d", userId);
-        String url = "http://barcodes4.me/barcode/c128b/" + formattedId + ".png?resolution=2";
+        String url = appProperties.getUrlBarcodeGenerator()+ formattedId + "." + appProperties.getBarcodeFileFormat() + "?resolution=" + appProperties.getBarcodeResolution();
+//        String url = "http://barcodes4.me/barcode/c128b/" + formattedId + ".png?resolution=2";
         byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
         barcode.setBarcodeId(formattedId);
         String string = Base64.getEncoder().encodeToString(imageBytes);
