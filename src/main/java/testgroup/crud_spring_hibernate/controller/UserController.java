@@ -1,6 +1,9 @@
 package testgroup.crud_spring_hibernate.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -114,7 +117,10 @@ public class UserController {
 
     @GetMapping(value = "/user/view/{id}")
     public String showUser(@PathVariable("id") Long id, Model model) {
-        //        Тут есть косяк, если ввести не существующий id пользователя, покажется страничка с пустыми строками
+        //Тут есть косяк, если ввести не существующий id пользователя, покажется страничка с пустыми строками
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long currentId = userService.findByUserName(userDetails.getUsername()).getId();
+        if(currentId == id){
         User user = userService.getById(id);
         model.addAttribute("user", user);
         try {
@@ -123,7 +129,10 @@ public class UserController {
         } catch (NullPointerException e) {
             return "redirect:/";
         }
-        return "showUser";
+        return "showUser";}
+        else{
+            return  "redirect:/user/view/"+currentId;
+        }
     }
 
 }
