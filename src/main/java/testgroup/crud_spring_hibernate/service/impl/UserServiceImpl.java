@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
         Long userId = userDAO.add(user);
         String formattedId = String.format("S%06d", userId);
         String url = appProperties.getUrlBarcodeGenerator()+ formattedId + "." + appProperties.getBarcodeFileFormat() + "?resolution=" + appProperties.getBarcodeResolution();
-//        String url = "http://barcodes4.me/barcode/c128b/" + formattedId + ".png?resolution=2";
         byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
         barcode.setBarcodeId(formattedId);
         String string = Base64.getEncoder().encodeToString(imageBytes);
